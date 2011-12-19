@@ -1,0 +1,46 @@
+h1. cinder GStreamer Integration
+
+This is a first attempt at getting the "GStreamer open source multimedia framework":http://gstreamer.freedesktop.org/ working and integrated with "cinder":http://libcinder.org/.
+
+h2. GstGLVideoPlayer
+
+This approach takes this general workflow into account:
+
+* Use the "playbin2 plugin":http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-base-plugins/html/gst-plugins-base-plugins-playbin2.html as our base pipeline for all-encompassing media playback.
+* Create a special bin that uses the "glupload plugin":http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-gl-plugins/html/gst-plugins-gl-plugins-glupload.html for taking frame buffers and mapping them to textures in a shared GL context.
+* Use the "appsink plugin":http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-base-libs/html/gst-plugins-base-libs-appsink.html for handling querying of the pipeline and event callbacks.
+
+h2. General Notes
+
+* This has only been tested and implemented in Windows 7 64-bit Professional.
+* It makes use of the <code>directsoundsink</code> audio sink for the audio portion of the video file. This would need to change if you wanted to try to get this working on a Mac.
+
+
+h2. Installation on Windows
+
+The easiest way to get the GStreamer libraries and SDK on your Windows machine is to install them via the OSSBuild environment. You can find that here:
+
+"OSSBuild":http://code.google.com/p/ossbuild/
+
+I have only tried this with the x86 Beta04 0.10.7 build thus far.
+
+You'll want to grab the .MSI for both the "regular" library install (GStreamer-WinBuilds-...) and the SDK (Gstreamer-WinBuilds-SDK-...). Once you've installed those, you'll have two new system environment variables called:
+
+* <code>$(OSSBUILD_GSTREAMER_DIR)</code>
+* <code>$(OSSBUILD_GSTREAMER_SDK_DIR)</code>
+
+These are important becuase you'll need to reference them when trying to add your additional include folders and your linker settings in Visual Studio C++ 2010.
+
+h2. Compiling in Visual Studio C++ 2010
+
+You should be familiar with these steps if you've ever had to add additional libraries to your project.
+
+# Open your project's Property Pages dialogue (right-click on the project from the Solution Explorer and click Properties).
+# In the Configuration Properties sidebar menu, find *C/C++ > General*. There's an *Additional Inlcude Directories* value in there. You'll need to add a BUNCH of new folders.
+** First you'll need <code>$(OSSBUILD_GSTREAMER_SDK_DIR)\include</code>
+** Then you'll need to add every subfolder that in that include folder. Super pain in the ass, but you need to do it.
+# Next go to the *Configruation Properties > Linker > General* pane. Find *Additional Library Directories*.
+# In this field you just need to add: <code>$(OSSBUILD_GSTREAMER_SDK_DIR)\lib</code>
+# Lastly go to the *Configruation Properties > Linker > Input* pane. Find *Additional Dependencies*. Here you'll add each of the <code>.lib</code> files that exist in the OSSBuild Gstreamer SDK's lib folder. That folder is usually installed here: <code>C:\Program Files (x86)\OSSBuild\GStreamer\v0.10.7\sdk\lib</code>.
+
+That's everything you should need to add to your Cinder project.
