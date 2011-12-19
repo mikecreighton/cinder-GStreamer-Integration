@@ -14,6 +14,7 @@ h2. General Notes
 
 * This has only been tested and implemented in Windows 7 64-bit Professional.
 * It makes use of the <code>directsoundsink</code> audio sink for the audio portion of the video file. This would need to change if you wanted to try to get this working on a Mac.
+* The GstGLVideoPlayer attempts to read files as assets from your hard drive. So when you create your Cinder project, make sure you create an <code>assets</code> folder and stick your movie file in there.
 
 
 h2. Installation on Windows
